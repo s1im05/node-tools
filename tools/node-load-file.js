@@ -3,6 +3,8 @@ const http = require('http'),
 	request = require('request'),
 	fs = require('fs'),
 	url = require('url'),
+	delay = 2,
+	tryCount = 5,
 	parseParams = (input) => {
 		const query = url.parse(input).query,
 			params = {};
@@ -29,11 +31,24 @@ const http = require('http'),
 				fs.mkdirSync(dirToFull);
 			}
 			const file = path.basename(params.src),
-				req = request(params.src, function(error, response, body){
-                    console.log('Done!', params.src);
-                    console.log('------------------------------------');
-                    res.end();
+			load = (src, cnt = 0) => {
+				const req = request(src, (error, response, body) => {
+					if (error) {
+						if (cnt === tryCount) {
+							res.end();
+						}
+						setTimeout(() => {
+							console.log('Error for', src, 'try:', cnt + 1);
+							load(src, cnt + 1);
+						}, delay * 1000);
+					} else {
+						console.log('Done!', src);
+						console.log('------------------------------------');
+						res.end();
+					}                  
 				}).pipe(fs.createWriteStream(dirToFull + '/' + file));
+			};
+			load(params.src);	
 		} else {
             res.end();
 		}
