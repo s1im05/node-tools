@@ -28,10 +28,15 @@ const http = require('http'),
 			} catch (err) {
 				fs.mkdirSync(dirToFull);
 			}
-			const file = path.basename(params.src);
-			request(params.src).pipe(fs.createWriteStream(dirToFull + '/' + file));			
+			const file = path.basename(params.src),
+				req = request(params.src, function(error, response, body){
+                    console.log('Done!', params.src);
+                    console.log('------------------------------------');
+                    res.end();
+				}).pipe(fs.createWriteStream(dirToFull + '/' + file));
+		} else {
+            res.end();
 		}
-		res.end();
 	}),
     port = 8383;
 	
