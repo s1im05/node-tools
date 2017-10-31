@@ -1,0 +1,32 @@
+<html>
+<head>
+    <title>Foo</title>
+</head>
+<body>
+<img class="lll" src="http://static:8080/1.jpg" />
+<img class="lll" src="http://static:8080/2.jpg" />
+
+<script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+<script>
+    const nodeServer = 'http://localhost:8383/',
+        dirTo = 'c:/TEMP',
+        selector = 'img.lll',
+        id = 123,
+        end = () => {
+            console.log('End!');
+        };
+
+    $(function () {
+        let cnt = 0;
+        const imgs = $(selector).each(function(){
+            $.getScript(nodeServer + '?id=' + id + '&src=' + this.src + '&to=' + dirTo, function(){
+                cnt++;
+                if (cnt === imgs.length) {
+                    end();
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

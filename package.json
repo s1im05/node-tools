@@ -6,11 +6,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "move-files": "nodemon tools/node-move-file.js",
-	"start": "node index.js"
+    "load-files": "nodemon tools/node-load-file.js",
+    "start": "node index.js"
   },
   "author": "Vadim Suleimanov",
   "license": "ISC",
   "dependencies": {
+    "request": "^2.83.0"
   },
   "devDependencies": {
     "nodemon": "^1.11.0"
