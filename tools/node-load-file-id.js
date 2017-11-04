@@ -1,4 +1,4 @@
-// Usage: http://localhost:8383/?src=SOME_URL&to=SOME_DIR
+// Usage: http://localhost:8383/?src=SOME_URL&to=SOME_DIR&id=SOME_NUM
 
 
 const http = require('http'),
@@ -21,12 +21,13 @@ const http = require('http'),
 	},
 	server = http.createServer((req, res) => {
 		const params = parseParams(req.url);
-		if (params.src && params.to) {
+		if (+params.id) {
+			console.log('Copy ID:', params.id);
 			console.log('Src:', params.src);
 			console.log('Destination:', params.to);
 			console.log('------------------------------------');
 			
-			const dirToFull = params.to;
+			const dirToFull = params.to + '/' + params.id;
 			try {
 				fs.accessSync(dirToFull);
 			} catch (err) {

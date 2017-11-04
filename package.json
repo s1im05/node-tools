@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "move-files": "nodemon tools/node-move-file.js",
-    "load-files": "nodemon tools/node-load-file.js",
+    "move": "nodemon tools/node-move-file.js",
+    "load": "nodemon tools/node-load-file.js",
+    "load-id": "nodemon tools/node-load-file-id.js",
     "start": "node index.js"
   },
   "author": "Vadim Suleimanov",
