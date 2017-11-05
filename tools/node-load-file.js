@@ -1,6 +1,6 @@
 // Usage: http://localhost:8383/?src=SOME_URL&to=SOME_DIR
 
-
+let jobCnt = 0;
 const http = require('http'),
 	path = require('path'),
 	request = require('request'),
@@ -20,12 +20,9 @@ const http = require('http'),
 		return params;
 	},
 	server = http.createServer((req, res) => {
+        jobCnt++;
 		const params = parseParams(req.url);
-		if (params.src && params.to) {
-			console.log('Src:', params.src);
-			console.log('Destination:', params.to);
-			console.log('------------------------------------');
-			
+		if (params.src && params.to) {			
 			const dirToFull = params.to;
 			try {
 				fs.accessSync(dirToFull);
@@ -33,24 +30,27 @@ const http = require('http'),
 				fs.mkdirSync(dirToFull);
 			}
 			const file = path.basename(params.src),
-			load = (src, cnt = 0) => {
+			load = (src, jobN, cnt = 0) => {
+                console.log('#'+jobN, 'Src:', params.src);
+                console.log('Destination:', params.to);
+                console.log('------------------------------------');
 				const req = request(src, (error, response, body) => {
 					if (error) {
 						if (cnt === tryCount) {
 							res.end();
 						}
 						setTimeout(() => {
-							console.log('Error for', src, 'try:', cnt + 1);
-							load(src, cnt + 1);
+							console.log('#'+jobN, 'Error for', src, 'try:', cnt + 1);
+							load(src, jobN, cnt + 1);
 						}, delay * 1000);
 					} else {
-						console.log('Done!', src);
+						console.log('#'+jobN, 'Done!', src);
 						console.log('------------------------------------');
 						res.end();
 					}                  
 				}).pipe(fs.createWriteStream(dirToFull + '/' + file));
 			};
-			load(params.src);	
+			load(params.src, jobCnt);	
 		} else {
             res.end();
 		}
