@@ -1,4 +1,4 @@
-// Usage: http://localhost:8383/?src=SOME_URL&to=SOME_DIR
+// Usage: http://localhost:8383/?src=SOME_URL&to=SOME_DIR&rename=NEW_FILE_NAME
 
 let jobCnt = 0;
 const http = require('http'),
@@ -14,13 +14,17 @@ const http = require('http'),
 		if (query) {
 			query.split('&').forEach(param => {
 				const keyVal = param.split('=');
-				params[keyVal[0]] = keyVal[1];
+				params[keyVal[0]] = decodeURIComponent(keyVal[1]);
 			});
 		}
 		return params;
 	},
 	server = http.createServer((req, res) => {
-        jobCnt++;
+		res.setHeader('Access-Control-Allow-Origin', '*');
+		res.setHeader('Access-Control-Request-Method', '*');
+		res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+		res.setHeader('Access-Control-Allow-Headers', '*');
+        	jobCnt++;
 		const params = parseParams(req.url);
 		if (params.src && params.to) {			
 			const dirToFull = params.to;
@@ -29,11 +33,11 @@ const http = require('http'),
 			} catch (err) {
 				fs.mkdirSync(dirToFull);
 			}
-			const file = path.basename(params.src),
+			const file = path.basename(params.rename || params.src),
 			load = (src, jobN, cnt = 0) => {
-                console.log('#'+jobN, 'Src:', params.src);
-                console.log('Destination:', params.to);
-                console.log('------------------------------------');
+                		console.log('#'+jobN, 'Src:', params.src);
+	                	console.log('Destination:', params.to);
+	                	console.log('------------------------------------');
 				const req = request(src, (error, response, body) => {
 					if (error) {
 						if (cnt === tryCount) {
@@ -52,7 +56,7 @@ const http = require('http'),
 			};
 			load(params.src, jobCnt);	
 		} else {
-            res.end();
+            		res.end();
 		}
 	}),
     port = 8383;
